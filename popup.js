@@ -13,20 +13,41 @@ document.addEventListener('DOMContentLoaded', function() {
     var http = new XMLHttpRequest();
     http.responseType = 'document';
     http.addEventListener('load', function() {
-      var lyrics = lyricsDiv(http.response);
+      var lyrics = azLyricsFromDOM(http.response);
 
-      var explicit = explicitWords.reduce(function(acc, elt) {
-        return acc || lyrics.includes(elt);
-      }, false);
+      var explicitIndexes = explicitWords.reduce(function(acc, word) {
+        return acc.concat(indexes(lyrics, word));
+      }, []);
 
-      alert(explicit);
+      var contexts = explicitIndexes.map(function(index) {
+        return lyrics.substring(index - 10, index + 10);
+      });
+
+      console.log(contexts);
     });
     http.open('GET', lyricsURL);
     http.send();
   });
 });
 
-function lyricsDiv(dom) {
+function indexes(str, sub) {
+  var found = []
+  var index = 0;
+  while (index < str.length - sub.length + 1) {
+    var next = str.indexOf(sub, index);
+
+    if (next != -1) {
+      found.push(next);
+      index = next + sub.length;
+    } else {
+      index++;
+    }
+  }
+
+  return found;
+}
+
+function azLyricsFromDOM(dom) {
   var contentDiv = dom.getElementsByClassName('col-xs-12 col-lg-8 text-center')[0];
 
   var index = 8;
