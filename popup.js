@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', function() {
   var songText = document.getElementById('song');
   var checkButton = document.getElementById('check');
 
+  var results = document.getElementById('results');
+
   check.addEventListener('click', function() {
     var lyricsURL = azLyricsURL(artist.value, song.value);
 
