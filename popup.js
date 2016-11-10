@@ -15,17 +15,26 @@ document.addEventListener('DOMContentLoaded', function() {
     var http = new XMLHttpRequest();
     http.responseType = 'document';
     http.addEventListener('load', function() {
+      // Remove all prior results from the list.
+      while (results.firstChild)
+        results.removeChild(results.firstChild);
+
+      // Get the lyrics from the document object retrieved, and
+      // replace all <br> occurences with new line characters.
       var lyrics = azLyricsFromDOM(http.response);
+      lyrics = lyrics.replace(/<br>/g, '\n');
 
       var explicitIndexes = explicitWords.reduce(function(acc, word) {
         return acc.concat(indexes(lyrics, word));
       }, []);
 
-      var contexts = explicitIndexes.map(function(index) {
-        return lyrics.substring(index - 10, index + 10);
-      });
+      explicitIndexes.forEach(function(index) {
+        var context = lyrics.substring(index - 10, index + 10);
+        var entry = document.createElement('li');
+        entry.appendChild(document.createTextNode(context));
 
-      console.log(contexts);
+        results.appendChild(entry);
+      });
     });
     http.open('GET', lyricsURL);
     http.send();
