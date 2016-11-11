@@ -58,6 +58,19 @@ function indexes(str, sub) {
   return found;
 }
 
+function containingLine(str, index) {
+  var startIndex = index;
+  while (startIndex > -1 && str.charAt(startIndex) !== '\n')
+    startIndex--;
+  startIndex++;
+
+  var endIndex = index;
+  while (endIndex < str.length && str.charAt(endIndex) !== '\n')
+    endIndex++;
+
+  return str.slice(startIndex, endIndex);
+}
+
 function azLyricsFromDOM(dom) {
   var contentDiv = dom.getElementsByClassName('col-xs-12 col-lg-8 text-center')[0];
 
