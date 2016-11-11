@@ -24,17 +24,25 @@ document.addEventListener('DOMContentLoaded', function() {
       var lyrics = azLyricsFromDOM(http.response);
       lyrics = lyrics.replace(/<br>/g, '\n').replace(/<.+>/g, '');
 
+      // TODO: Two loops here when only one is needed.
       var explicitIndexes = explicitWords.reduce(function(acc, word) {
         return acc.concat(indexes(lyrics, word));
       }, []);
 
-      explicitIndexes.forEach(function(index) {
-        var context = lyrics.substring(index - 10, index + 10);
+      if (explicitIndexes.length > 0) {
+        explicitIndexes.forEach(function(index) {
+          var context = containingLine(lyrics, index);
+          var entry = document.createElement('li');
+          entry.appendChild(document.createTextNode(context));
+
+          results.appendChild(entry);
+        });
+      } else {
         var entry = document.createElement('li');
-        entry.appendChild(document.createTextNode(context));
+        entry.appendChild(document.createTextNode('This song seems to be clean!'));
 
         results.appendChild(entry);
-      });
+      }
     });
     http.open('GET', lyricsURL);
     http.send();
