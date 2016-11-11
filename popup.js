@@ -19,6 +19,12 @@ document.addEventListener('DOMContentLoaded', function() {
       while (results.firstChild)
         results.removeChild(results.firstChild);
 
+      if (http.status == 404) {
+        var entry = document.createElement('li');
+        entry.appendChild(document.createTextNode('No such song. Check spelling'));
+        results.appendChild(entry);
+      }
+
       // Get the lyrics from the document object retrieved, and
       // replace all <br> occurences with new line characters.
       var lyrics = azLyricsFromDOM(http.response);
