@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
       // Get the lyrics from the document object retrieved, and
       // replace all <br> occurences with new line characters.
       var lyrics = azLyricsFromDOM(http.response);
-      lyrics = lyrics.replace(/<br>/g, '\n');
+      lyrics = lyrics.replace(/<br>/g, '\n').replace(/<.+>/g, '');
 
       var explicitIndexes = explicitWords.reduce(function(acc, word) {
         return acc.concat(indexes(lyrics, word));
