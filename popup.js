@@ -16,14 +16,10 @@ document.addEventListener('DOMContentLoaded', function() {
     http.responseType = 'document';
     http.addEventListener('load', function() {
       // Remove all prior results from the list.
-      while (results.firstChild)
-        results.removeChild(results.firstChild);
+      clearList(results);
 
-      if (http.status == 404) {
-        var entry = document.createElement('li');
-        entry.appendChild(document.createTextNode('No such song. Check spelling'));
-        results.appendChild(entry);
-      }
+      if (http.status == 404)
+        addListItem(results, 'No such song. Check spelling');
 
       // Get the lyrics from the document object retrieved, and
       // replace all <br> occurences with new line characters.
@@ -38,16 +34,10 @@ document.addEventListener('DOMContentLoaded', function() {
       if (explicitIndexes.length > 0) {
         explicitIndexes.forEach(function(index) {
           var context = containingLine(lyrics, index);
-          var entry = document.createElement('li');
-          entry.appendChild(document.createTextNode(context));
-
-          results.appendChild(entry);
+          addListItem(results, context);
         });
       } else {
-        var entry = document.createElement('li');
-        entry.appendChild(document.createTextNode('This song seems to be clean!'));
-
-        results.appendChild(entry);
+        addListItem(results, 'This song seems to be clean!');
       }
     });
     http.open('GET', lyricsURL);
@@ -70,6 +60,19 @@ function indexes(str, sub) {
   }
 
   return found;
+}
+
+function clearList(list) {
+  while (list.firstChild)
+    list.removeChild(list.firstChild);
+}
+
+function addListItem(list, text) {
+  var entry = document.createElement('li');
+  var textNode = document.createTextNode(text);
+
+  entry.appendChild(textNode);
+  list.appendChild(entry);
 }
 
 function containingLine(str, index) {
