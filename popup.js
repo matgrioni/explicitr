@@ -7,8 +7,10 @@ document.addEventListener('DOMContentLoaded', function() {
   var songText = document.getElementById('song');
   var checkButton = document.getElementById('check');
 
+  var resultsSection = document.getElementById('results-section');
   var results = document.getElementById('results');
 
+  hideElement(resultsSection);
   check.addEventListener('click', function() {
     var lyricsURL = azLyricsURL(artist.value, song.value);
 
@@ -16,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
     http.responseType = 'document';
     http.addEventListener('load', function() {
       // Remove all prior results from the list.
+      showElement(resultsSection, 'block');
       clearList(results);
 
       if (http.status == 404)
@@ -60,6 +63,14 @@ function indexes(str, sub) {
   }
 
   return found;
+}
+
+function hideElement(elem) {
+  elem.style.display = 'none';
+}
+
+function showElement(elem, dispType='block') {
+  elem.style.display = dispType;
 }
 
 function clearList(list) {
