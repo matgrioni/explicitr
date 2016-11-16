@@ -12,7 +12,6 @@
     },
 
     "permissions": [
-        "activeTab",
-        "http://*/"
+        "http://azlyrics.com/lyrics/*"
     ]
 }
