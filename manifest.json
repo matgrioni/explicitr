@@ -2,7 +2,7 @@
     "manifest_version": 2,
 
     "name": "Explicit Song Checker",
-    "description": "A simple extension to check if a song is explicit or not. It checks against lyrics found on azlyrics.com. It's main use is for party DJ's to check if a requested song is explicit in a more precise way.",
+    "description": "Party DJ's can accurately check if a song is explicit or not using lyrics found on azlyrics.com.",
     "short_description": "Check if a song is explicit or not!",
     "version": "1.0",
 
