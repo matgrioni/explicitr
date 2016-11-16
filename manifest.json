@@ -13,6 +13,6 @@
     },
 
     "permissions": [
-        "http://azlyrics.com/lyrics/*"
+        "http://*/*"
     ]
 }
