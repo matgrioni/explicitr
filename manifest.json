@@ -2,8 +2,8 @@
     "manifest_version": 2,
 
     "name": "Explicit Song Checker",
+    "short_name": "Explicitr",
     "description": "Party DJ's can accurately check if a song is explicit or not using lyrics found on azlyrics.com.",
-    "short_description": "Check if a song is explicit or not!",
     "version": "1.0",
 
     "browser_action": {
