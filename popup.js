@@ -3,23 +3,28 @@ var explicitWords = Object.freeze(['fuck', 'shit', 'nigga', 'nigger',
                                    'bitch', 'holy shit', 'whore']);
 
 document.addEventListener('DOMContentLoaded', function() {
-  var artistText = document.getElementById('artist');
-  var songText = document.getElementById('song');
-  var checkButton = document.getElementById('check');
+  var artistText = $('#artist');
+  var songText = $('#song');
+  var checkButton = $('#check');
 
-  var resultsSection = document.getElementById('results-section');
-  var results = document.getElementById('results');
+  var resultsSection = $('#results-section');
+  resultsSection.hide();
 
-  hideElement(resultsSection);
+  var results = $('#results');
+
   check.addEventListener('click', function() {
     var lyricsURL = azLyricsURL(artist.value, song.value);
+
+    $.get(lyricsURL, function(data) {
+
+    }, 'html');
 
     var http = new XMLHttpRequest();
     http.responseType = 'document';
     http.addEventListener('load', function() {
       // Remove all prior results from the list.
-      showElement(resultsSection, 'block');
-      clearList(results);
+      resultsSection.show();
+      results.empty();
 
       if (http.status == 404)
         addListItem(results, 'No such song. Check spelling');
@@ -73,17 +78,12 @@ function showElement(elem, dispType='block') {
   elem.style.display = dispType;
 }
 
-function clearList(list) {
-  while (list.firstChild)
-    list.removeChild(list.firstChild);
-}
-
 function addListItem(list, text) {
-  var entry = document.createElement('li');
+  var entry = $('<li>');
   var textNode = document.createTextNode(text);
 
-  entry.appendChild(textNode);
-  list.appendChild(entry);
+  entry.append(textNode);
+  list.append(entry);
 }
 
 function containingLine(str, index) {
