@@ -7,24 +7,41 @@ document.addEventListener('DOMContentLoaded', function() {
   var songText = $('#song');
   var checkButton = $('#check');
 
-  var resultsSection = $('#results-section');
-  resultsSection.hide();
-
-  var results = $('#results');
+  var resultsSections = $('.results-section');
+  resultsSections.hide();
+  var i = 0;
+  var used = false;
 
   check.addEventListener('click', function() {
     var lyricsURL = azLyricsURL(artist.value, song.value);
 
-    $.get(lyricsURL, function(data) {
-
-    }, 'html');
+    // TODO: Change HTTP request to jQuery usage.
+    //$.get(lyricsURL, function(data) {
+//
+    //}, 'html');
 
     var http = new XMLHttpRequest();
     http.responseType = 'document';
     http.addEventListener('load', function() {
+      var resultsSection = $(resultsSections.get(i));
+
       // Remove all prior results from the list.
-      resultsSection.show();
-      results.empty();
+      if (!used) {
+        used = true;
+        var results = resultsSection.find('ul');
+        resultsSection.show();
+      } else {
+        i = (i + 1) % 2;
+        var nextResultsSection = $(resultsSections.get(i));
+        nextResultsSection.show();
+
+        var results = nextResultsSection.find('ul');
+        results.empty();
+        resultsSection.animate({ 'marginLeft': '1000px' }, 3000, function() {
+          nextResultsSection.css('margin-left', 0);
+          resultsSection.hide();
+        });
+      }
 
       if (http.status == 404)
         addListItem(results, 'No such song. Check spelling');
