@@ -39,7 +39,10 @@ input[type=button]:focus {
 }
 
 .page-section {
-    margin-bottom: 30px;
+    margin-bottom: 15px;
+    /* To prevent collapsing margins, which also ensures smooth
+       animation. */
+    border: 1px solid transparent;
 }
 
 #results {

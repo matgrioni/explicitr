@@ -2,15 +2,15 @@ var explicitWords = Object.freeze(['fuck', 'shit', 'nigga', 'nigger',
                                    'cunt', 'motherfucker', 'ass',
                                    'bitch', 'holy shit', 'whore']);
 
+var SLIDE_ANIM_LENGTH = 500;
+
 document.addEventListener('DOMContentLoaded', function() {
   var artistText = $('#artist');
   var songText = $('#song');
   var checkButton = $('#check');
 
-  var resultsSections = $('.results-section');
-  resultsSections.hide();
-  var i = 0;
-  var used = false;
+  var resultsSection = $('#results-section');
+  var results = $('#results');
 
   check.addEventListener('click', function() {
     var lyricsURL = azLyricsURL(artist.value, song.value);
@@ -23,47 +23,34 @@ document.addEventListener('DOMContentLoaded', function() {
     var http = new XMLHttpRequest();
     http.responseType = 'document';
     http.addEventListener('load', function() {
-      var resultsSection = $(resultsSections.get(i));
-
-      // Remove all prior results from the list.
-      if (!used) {
-        used = true;
-        var results = resultsSection.find('ul');
-        resultsSection.show();
-      } else {
-        i = (i + 1) % 2;
-        var nextResultsSection = $(resultsSections.get(i));
-        nextResultsSection.show();
-
-        var results = nextResultsSection.find('ul');
+      resultsSection.slideUp(SLIDE_ANIM_LENGTH, function() {
         results.empty();
-        resultsSection.animate({ 'marginLeft': '1000px' }, 3000, function() {
-          nextResultsSection.css('margin-left', 0);
-          resultsSection.hide();
-        });
-      }
 
-      if (http.status == 404)
-        addListItem(results, 'No such song. Check spelling');
+        if (http.status == 404)
+          addListItem(results, 'No such song. Check spelling');
+        else {
+          // Get the lyrics from the document object retrieved, and
+          // replace all <br> occurences with new line characters.
+          var lyrics = azLyricsFromDOM(http.response);
+          lyrics = lyrics.replace(/<br>/g, '\n').replace(/<.+>/g, '');
 
-      // Get the lyrics from the document object retrieved, and
-      // replace all <br> occurences with new line characters.
-      var lyrics = azLyricsFromDOM(http.response);
-      lyrics = lyrics.replace(/<br>/g, '\n').replace(/<.+>/g, '');
+          // TODO: Two loops here when only one is needed.
+          var explicitIndexes = explicitWords.reduce(function(acc, word) {
+            return acc.concat(indexes(lyrics, word));
+          }, []);
 
-      // TODO: Two loops here when only one is needed.
-      var explicitIndexes = explicitWords.reduce(function(acc, word) {
-        return acc.concat(indexes(lyrics, word));
-      }, []);
+          if (explicitIndexes.length > 0) {
+            explicitIndexes.forEach(function(index) {
+              var context = containingLine(lyrics, index);
+              addListItem(results, context);
+            });
+          } else {
+            addListItem(results, 'This song seems to be clean!');
+          }
+        }
 
-      if (explicitIndexes.length > 0) {
-        explicitIndexes.forEach(function(index) {
-          var context = containingLine(lyrics, index);
-          addListItem(results, context);
-        });
-      } else {
-        addListItem(results, 'This song seems to be clean!');
-      }
+        resultsSection.slideDown(SLIDE_ANIM_LENGTH);
+      });
     });
     http.open('GET', lyricsURL);
     http.send();
