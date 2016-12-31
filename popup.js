@@ -112,13 +112,22 @@ function azLyricsFromDOM(dom) {
   return child.innerHTML;
 }
 
-function urlify(str) {
-  punct = /[,;:!\.\?"~%\(\)]/g
-  var newStr = str.toLowerCase().trim().replace(/\s/g, '').replace(punct, '');
+function urlifyArtist(artist) {
+  r = /^[Tt]he |[,;:!\.\?"~%\(\)]/g
+  return urlify(artist, r);
+}
+
+function urlifySong(song) {
+  r = /[,;:!\.\?"~%\(\)]/g;
+  return urlify(song, r);
+}
+
+function urlify(str, regex) {
+  var newStr = str.trim().replace(regex, '').replace(/\s/g, '').toLowerCase();
   return newStr;
 }
 
 function azLyricsURL(artist, song) {
   return 'http://azlyrics.com/lyrics/' +
-         urlify(artist) + '/' + urlify(song) + '.html';
+         urlifyArtist(artist) + '/' + urlifySong(song) + '.html';
 }
