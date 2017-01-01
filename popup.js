@@ -15,45 +15,39 @@ document.addEventListener('DOMContentLoaded', function() {
   check.addEventListener('click', function() {
     var lyricsURL = azLyricsURL(artist.value, song.value);
 
-    // TODO: Change HTTP request to jQuery usage.
-    //$.get(lyricsURL, function(data) {
-//
-    //}, 'html');
+    lines = []
+    $.get(lyricsURL).done(function(data) {
+      // Get the lyrics from the document object retrieved, and
+      // replace all <br> occurences with new line characters.
+      var doc = $(data);
+      var lyrics = azLyricsFromDOM(doc);
+      lyrics = lyrics.replace(/<br>/g, '\n').replace(/<.+>/g, '');
 
-    var http = new XMLHttpRequest();
-    http.responseType = 'document';
-    http.addEventListener('load', function() {
+      // TODO: Two loops here when only one is needed.
+      var explicitIndexes = explicitWords.reduce(function(acc, word) {
+        return acc.concat(indexes(lyrics, word));
+      }, []);
+
+      if (explicitIndexes.length > 0) {
+        explicitIndexes.forEach(function(index) {
+          lines.push(containingLine(lyrics, index));
+        });
+      } else {
+        lines.push('This song seems to be clean!');
+      }
+    }).fail(function() {
+      lines.push('No such song. Check spelling');
+    }).always(function() {
       resultsSection.slideUp(SLIDE_ANIM_LENGTH, function() {
         results.empty();
 
-        if (http.status == 404)
-          addListItem(results, 'No such song. Check spelling');
-        else {
-          // Get the lyrics from the document object retrieved, and
-          // replace all <br> occurences with new line characters.
-          var lyrics = azLyricsFromDOM(http.response);
-          lyrics = lyrics.replace(/<br>/g, '\n').replace(/<.+>/g, '');
-
-          // TODO: Two loops here when only one is needed.
-          var explicitIndexes = explicitWords.reduce(function(acc, word) {
-            return acc.concat(indexes(lyrics, word));
-          }, []);
-
-          if (explicitIndexes.length > 0) {
-            explicitIndexes.forEach(function(index) {
-              var context = containingLine(lyrics, index);
-              addListItem(results, context);
-            });
-          } else {
-            addListItem(results, 'This song seems to be clean!');
-          }
-        }
+        lines.forEach(function(line) {
+          addListItem(results, line);
+        });
 
         resultsSection.slideDown(SLIDE_ANIM_LENGTH);
       });
     });
-    http.open('GET', lyricsURL);
-    http.send();
   });
 });
 
@@ -104,7 +98,7 @@ function containingLine(str, index) {
 }
 
 function azLyricsFromDOM(dom) {
-  var contentDiv = dom.getElementsByClassName('col-xs-12 col-lg-8 text-center')[0];
+  var contentDiv = dom.find('.col-xs-12.col-lg-8.text-center')[0];
 
   var index = 8;
   var child = contentDiv.children[index];
