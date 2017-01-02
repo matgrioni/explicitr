@@ -12,7 +12,13 @@ document.addEventListener('DOMContentLoaded', function() {
   var resultsSection = $('#results-section');
   var results = $('#results');
 
-  check.addEventListener('click', function() {
+  songText.on('keyup', function(e) {
+    if (e.keyCode == 13) {
+      checkButton.click();
+    }
+  });
+
+  checkButton.on('click', function() {
     var lyricsURL = azLyricsURL(artist.value, song.value);
 
     lines = []
