@@ -47,6 +47,9 @@ input[type=button]:focus {
 
 #results {
     list-style: none;
+    /* To prevent collapsing margins, which also ensures smooth
+       animation. The marin here comes from defaults of the browser */
+    border: 1px solid transparent;
 }
 
 #results li {

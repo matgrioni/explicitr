@@ -38,14 +38,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }).fail(function() {
       lines.push('No such song. Check spelling');
     }).always(function() {
-      resultsSection.slideUp(SLIDE_ANIM_LENGTH, function() {
+      results.slideUp(SLIDE_ANIM_LENGTH, function() {
         results.empty();
 
         lines.forEach(function(line) {
           addListItem(results, line);
         });
 
-        resultsSection.slideDown(SLIDE_ANIM_LENGTH);
+        results.slideDown(SLIDE_ANIM_LENGTH);
       });
     });
   });
