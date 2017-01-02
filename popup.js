@@ -19,6 +19,23 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   checkButton.on('click', function() {
+    var slideUpDone = false;
+    var requestDone = false;
+
+    results.slideUp(SLIDE_ANIM_LENGTH, function() {
+      slideUpDone = true;
+      
+      if (requestDone) {
+        results.empty();
+
+        lines.forEach(function(line) {
+          addListItem(results, line);
+        });
+
+        results.slideDown(SLIDE_ANIM_LENGTH);
+      }
+    });
+
     var lyricsURL = azLyricsURL(artist.value, song.value);
 
     lines = []
@@ -44,7 +61,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }).fail(function() {
       lines.push('No such song. Check spelling');
     }).always(function() {
-      results.slideUp(SLIDE_ANIM_LENGTH, function() {
+      requestDone = true;
+      if (slideUpDone) {
         results.empty();
 
         lines.forEach(function(line) {
@@ -52,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         results.slideDown(SLIDE_ANIM_LENGTH);
-      });
+      }
     });
   });
 });
