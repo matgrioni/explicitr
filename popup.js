@@ -3,8 +3,9 @@ var explicitWords = Object.freeze(['fuck', 'shit', 'nigga', 'nigger',
                                    'bitch', 'holy shit', 'whore']);
 
 var SLIDE_ANIM_LENGTH = 500;
+var ENTER_KEY = 13;
 
-document.addEventListener('DOMContentLoaded', function() {
+$(document).ready(function() {
   var artistText = $('#artist');
   var songText = $('#song');
   var checkButton = $('#check');
@@ -12,33 +13,30 @@ document.addEventListener('DOMContentLoaded', function() {
   var resultsSection = $('#results-section');
   var results = $('#results');
 
-  songText.on('keyup', function(e) {
-    if (e.keyCode == 13) {
+  artistText.on('keyup', function(e) {
+    if (e.keyCode == ENTER_KEY)
       checkButton.click();
-    }
+  });
+
+  songText.on('keyup', function(e) {
+    if (e.keyCode == ENTER_KEY)
+      checkButton.click();
   });
 
   checkButton.on('click', function() {
     var slideUpDone = false;
     var requestDone = false;
+    lines = []
 
     results.slideUp(SLIDE_ANIM_LENGTH, function() {
       slideUpDone = true;
       
-      if (requestDone) {
-        results.empty();
-
-        lines.forEach(function(line) {
-          addListItem(results, line);
-        });
-
-        results.slideDown(SLIDE_ANIM_LENGTH);
-      }
+      if (requestDone)
+        showResults(results, lines);
     });
 
     var lyricsURL = azLyricsURL(artist.value, song.value);
 
-    lines = []
     $.get(lyricsURL).done(function(data) {
       // Get the lyrics from the document object retrieved, and
       // replace all <br> occurences with new line characters.
@@ -46,31 +44,21 @@ document.addEventListener('DOMContentLoaded', function() {
       var lyrics = azLyricsFromDOM(doc);
       lyrics = lyrics.replace(/<br>/g, '\n').replace(/<.+>/g, '');
 
-      // TODO: Two loops here when only one is needed.
-      var explicitIndexes = explicitWords.reduce(function(acc, word) {
-        return acc.concat(indexes(lyrics, word));
-      }, []);
-
-      if (explicitIndexes.length > 0) {
-        explicitIndexes.forEach(function(index) {
+      explicitWords.forEach(function(word) {
+        indexes(lyrics, word).forEach(function(index) {
           lines.push(containingLine(lyrics, index));
         });
-      } else {
+      });
+
+      if (lines.length == 0)
         lines.push('This song seems to be clean!');
-      }
     }).fail(function() {
       lines.push('No such song. Check spelling');
     }).always(function() {
       requestDone = true;
-      if (slideUpDone) {
-        results.empty();
 
-        lines.forEach(function(line) {
-          addListItem(results, line);
-        });
-
-        results.slideDown(SLIDE_ANIM_LENGTH);
-      }
+      if (slideUpDone)
+        showResults(results, lines);
     });
   });
 });
@@ -92,20 +80,22 @@ function indexes(str, sub) {
   return found;
 }
 
-function hideElement(elem) {
-  elem.style.display = 'none';
-}
-
-function showElement(elem, dispType='block') {
-  elem.style.display = dispType;
-}
-
 function addListItem(list, text) {
   var entry = $('<li>');
   var textNode = document.createTextNode(text);
 
   entry.append(textNode);
   list.append(entry);
+}
+
+function showResults(results, items) {
+  results.empty();
+
+  items.forEach(function(item) {
+    addListItem(results, item);
+  });
+
+  results.slideDown(SLIDE_ANIM_LENGTH);
 }
 
 function containingLine(str, index) {
