@@ -22,6 +22,6 @@
     },
 
     "permissions": [
-        "http://*.azlyrics.com/lyrics/*"
+        "http://lyric-api.herokuapp.com/api/find/*"
     ]
 }
