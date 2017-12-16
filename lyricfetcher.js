@@ -27,7 +27,7 @@ LyricFetcher.prototype.getLyrics = function(artist, song, done, fail, always) {
   var url = _urljoin([this.baseLyricsURL, encodedArtist, encodedSong]);
 
   $.get(url).done(function(data) {
-    if (data.err == "none")
+    if (data.err === "none")
       done(data.lyric);
     else
       fail();
