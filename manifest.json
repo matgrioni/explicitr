@@ -3,7 +3,7 @@
     "name": "Explicitr",
     "version": "1.2",
 
-    "description": "Party DJ's can accurately check if a song is explicit or not using lyrics found on azlyrics.com.",
+    "description": "Party DJ's can accurately check if a song is explicit or not using lyrics found on LyricsWiki.",
 
     "icons": {
         "16":  "images/icon16.png",

@@ -1,7 +1,3 @@
-var explicitWords = Object.freeze(['fuck', 'shit', 'nigga', 'nigger',
-                                   'cunt', 'motherfucker', 'ass',
-                                   'bitch', 'holy shit', 'whore']);
-
 var SLIDE_ANIM_LENGTH = 500;
 var ENTER_KEY = 13;
 
@@ -37,7 +33,7 @@ $(document).ready(function() {
 
     var fetcher = new LyricFetcher();
     fetcher.getLyrics(artist.value, song.value, function(lyrics) {
-      explicitWords.forEach(function(word) {
+      EXPLICIT_WORDS.forEach(function(word) {
         indexes(lyrics, word).forEach(function(index) {
           lines.push(containingLine(lyrics, index));
         });
