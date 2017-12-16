@@ -22,45 +22,48 @@ $(document).ready(function() {
   checkButton.on('click', function() {
     var slideUpDone = false;
     var requestDone = false;
-    lines = []
+    nodes = []
 
     results.slideUp(SLIDE_ANIM_LENGTH, function() {
       slideUpDone = true;
       
       if (requestDone)
-        showResults(results, lines);
+        showResults(results, nodes);
     });
 
     var fetcher = new LyricFetcher();
     fetcher.getLyrics(artist.value, song.value, function(lyrics) {
       EXPLICIT_WORDS.forEach(function(word) {
-        indexes(lyrics, word).forEach(function(index) {
-          lines.push(containingLine(lyrics, index));
+        indexPairs(lyrics, word).forEach(function(indexPair) {
+          var format = formattedContainingLine(lyrics, indexPair[0],
+                                             indexPair[1]);
+          var node = createBoldNode(format[0], format[1], format[2]);
+          nodes.push(node);
         });
       });
 
-      if (lines.length == 0)
-        lines.push('This song seems to be clean!');
+      if (nodes.length == 0)
+        nodes.push(createTextNode('This song seems to be clean!'));
     }, function() {
-      lines.push('Error. Check spelling or server is down.');
+      nodes.push(createTextNode('Error. Check spelling or server is down.'));
     }, function() {
       requestDone = true;
 
       if (slideUpDone)
-        showResults(results, lines);
+        showResults(results, nodes);
     });
   });
 });
 
 
-function indexes(str, sub) {
+function indexPairs(str, sub) {
   var found = []
   var index = 0;
   while (index < str.length - sub.length + 1) {
     var next = str.indexOf(sub, index);
 
     if (next != -1) {
-      found.push(next);
+      found.push([next, next + sub.length]);
       index = next + sub.length;
     } else {
       index++;
@@ -70,33 +73,54 @@ function indexes(str, sub) {
   return found;
 }
 
-function addListItem(list, text) {
-  var entry = $('<li>');
-  var textNode = document.createTextNode(text);
+function createBoldNode(text, start, end) {
+  var boldNode = document.createElement("b");
+  var boldTextNode = document.createTextNode(text.slice(start, end));
+  boldNode.append(boldTextNode);
 
-  entry.append(textNode);
+  var priorNode = document.createTextNode(text.slice(0, start));
+  var afterNode = document.createTextNode(text.slice(end));
+
+  var span = document.createElement("span");
+  span.append(priorNode);
+  span.append(boldNode);
+  span.append(afterNode);
+
+  return span;
+}
+
+function createTextNode(text) {
+  return document.createTextNode(text);
+}
+
+function addListNode(list, node) {
+  var entry = $('<li>');
+  entry.append(node);
   list.append(entry);
 }
 
-function showResults(results, items) {
+function showResults(results, nodes) {
   results.empty();
 
-  items.forEach(function(item) {
-    addListItem(results, item);
+  nodes.forEach(function(node) {
+    addListNode(results, node);
   });
 
   results.slideDown(SLIDE_ANIM_LENGTH);
 }
 
-function containingLine(str, index) {
-  var startIndex = index;
-  while (startIndex > -1 && str.charAt(startIndex) !== '\n')
-    startIndex--;
-  startIndex++;
+function formattedContainingLine(str, startIndex, endIndex) {
+  var lineStartIndex = startIndex;
+  while (lineStartIndex > -1 && str.charAt(lineStartIndex) !== '\n')
+    lineStartIndex--;
+  lineStartIndex++;
 
-  var endIndex = index;
-  while (endIndex < str.length && str.charAt(endIndex) !== '\n')
-    endIndex++;
+  var lineEndIndex = endIndex;
+  while (lineEndIndex < str.length && str.charAt(lineEndIndex) !== '\n')
+    lineEndIndex++;
 
-  return str.slice(startIndex, endIndex);
+  var subStartIndex = startIndex - lineStartIndex;
+  var subEndIndex = endIndex - lineStartIndex;
+
+  return [str.slice(lineStartIndex, lineEndIndex), subStartIndex, subEndIndex];
 }
