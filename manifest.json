@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "Explicitr",
-    "version": "1.2",
+    "version": "1.3",
 
     "description": "Party DJ's can accurately check if a song is explicit or not using lyrics found on LyricsWiki.",
 
